@@ -1,0 +1,100 @@
+{% extends 'main_app/base.html' %}
+{% block page_title %}{{page_title}}{% endblock page_title %}
+
+{% block content %}
+<section style="font-family: 'Arial', sans-serif; padding: 20px; background: linear-gradient(to right bottom, #f8f9fa, #e9ecef);">
+    <div style="max-width: 100%; overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; background-color: #fff; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <tr>
+                <th style="padding: 10px; border: 1px solid #ccc; background: linear-gradient(to right, #f0f0f0, #e0e0e0); color: #333;">#</th>
+                <th style="padding: 10px; border: 1px solid #ccc; background: linear-gradient(to right, #f0f0f0, #e0e0e0); color: #333;">Staff</th>
+                <th style="padding: 10px; border: 1px solid #ccc; background: linear-gradient(to right, #f0f0f0, #e0e0e0); color: #333;">Course</th>
+                <th style="padding: 10px; border: 1px solid #ccc; background: linear-gradient(to right, #f0f0f0, #e0e0e0); color: #333;">Message</th>
+                <th style="padding: 10px; border: 1px solid #ccc; background: linear-gradient(to right, #f0f0f0, #e0e0e0); color: #333;">Leave Date</th>
+                <th style="padding: 10px; border: 1px solid #ccc; background: linear-gradient(to right, #f0f0f0, #e0e0e0); color: #333;">Submitted On</th>
+                <th style="padding: 10px; border: 1px solid #ccc; background: linear-gradient(to right, #f0f0f0, #e0e0e0); color: #333;">Action</th>
+            </tr>
+            {% for leave in  allLeave %}
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{forloop.counter}}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{leave.staff}}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{leave.staff.course}}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{leave.message}}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{leave.date}}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">{{leave.created_at}}</td>
+                <td style="padding: 10px; border: 1px solid #ccc;">
+                    {% if leave.status == 0 %}
+                    <button data-toggle="modal" data-target="#reply_modal" value="{{leave.id}}" style="background-color: #007bff; color: #fff; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">Reply</button>
+                    {% elif leave.status == -1 %}
+                    <span style="padding: 8px 16px; border-radius: 4px; background-color: #dc3545; color: #fff;">Rejected</span>
+                    {% else %}
+                    <span style="padding: 8px 16px; border-radius: 4px; background-color: #28a745; color: #fff;">Approved</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</section>
+<div class="modal fade" id="reply_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content" style="background: linear-gradient(to right bottom, #f8f9fa, #e9ecef);">
+         <div class="modal-header" style="background-color: #007bff; color: #fff;">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel"></h4>
+         </div>
+         <div class="modal-body">
+             <input type="hidden" id="id">
+           <p> Reply To <span id="reply_name"></span>'s Leave Request</p>  
+           <select id="reply_leave_status" style="padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+               <option value="">-- Select --</option>
+               <option value="1">Approve</option>
+               <option value="-1">Reject</option>
+           </select>
+        </div>
+        <div class="modal-footer" style="background-color: #f8f9fa;">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            <button id="reply_btn" class="btn btn-success btn-block">Submit</button>
+         </div>
+      </div>
+   </div>
+</div>
+{% endblock content %}
+{% block custom_js %}
+<script>
+$(document).ready(function(){
+    $(".reply_open_modal").click(function(){
+        var id = $(this).val();
+        var name = $(this).parents("tr").children("td:eq(1)").text();
+        $("#reply_name").text(name);
+        $("#id").val(id);
+    });
+    
+    $("#reply_btn").on("click", function(){
+        var id = $("#id").val();
+        var status = $("#reply_leave_status").val();
+        if (status == '1' || status == '-1') {
+            $.ajax({
+                url: "{% url 'view_staff_leave' %}",
+                type: 'POST',
+                data: {
+                    id: id,
+                    status: status
+                }
+            }).done(function(response){
+                if (response == "True") {
+                    alert("Leave Response Has Been Saved!");
+                    location.reload();
+                } else {
+                    alert("Reply Could Not Be Sent");
+                }
+            }).fail(function(response){
+                alert("Error Occured.");
+            });
+        } else {
+            alert("Choose valid response");
+        }
+    });
+});
+</script>
+{% endblock custom_js %}

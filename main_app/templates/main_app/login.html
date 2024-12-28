@@ -1,0 +1,166 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>U.M.S | Log In</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(to right top, #f8f9fa, #e9ecef);
+        }
+
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.projectsgeek.com/2014/11/College-Management-System.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.3; /* adjust opacity as needed */
+            z-index: -1;
+        }
+
+        .login-box {
+            width: 400px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            transition: box-shadow 0.3s, transform 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-box:hover {
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            transform: translateY(-5px);
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            color: #333;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-control {
+            border: none;
+            border-radius: 30px;
+            background-color: #f8f9fa;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+            border-radius: 20px;
+            padding: 12px;
+            width: 100%;
+            text-align: center;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .forgot-password a {
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .forgot-password a:hover {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .g-recaptcha {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body class="hold-transition login-page">
+    <div class="background-image"></div>
+    <div class="login-box">
+        <div class="login-logo">
+            <a href="#" style="color: #333; text-decoration: none;">University<span style="color: #28a745;"> Management System</span></a>
+        </div>
+        <div class="card">
+            <div class="card-body login-card-body">
+                {% if messages %}
+                <div class="col-12">
+                    {% for message in messages %}
+                    {% if message.tags == 'error' %}
+                    <div class="alert alert-danger text-center ">
+                        {{message }}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <form action="doLogin/" method="post">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <input required type="email" name='email' class="form-control" placeholder="Email">
+                    </div>
+                    <div class="input-group mb-3">
+                        <input required type="password" name='password' class="form-control" placeholder="Password">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="g-recaptcha" data-sitekey="6LfswtgZAAAAAJ7bhwqZZtDpBsc75ekH6FWA4Fnt"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-success btn-block">Log In</button>
+                        </div>
+                    </div>
+                </form>
+                <div class="forgot-password">
+                    <a href="{% url 'password_reset' %}">Forgot Password?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.login-box -->
+
+    <!-- Google Recaptcha -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</body>
+
+</html>
